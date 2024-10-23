@@ -1,3 +1,12 @@
+#!BPY
+
+"""
+Name: 'R2 Online Import .rmb/.rab/.txt'
+Blender: 249
+Group: 'Import'
+Tooltip: 'Import .rmb/.rab/.txt files'
+"""
+
 # Author: Trolll, https://github.com/Trolll67, https://vk.com/trolll67
 # Date: 2024-10-23
 # Description: Blender 2.49b plugin to import RMB and RAB files
@@ -17,14 +26,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#!BPY
-
-"""
-Name: 'R2 Online Import .rmb/.rab/.txt'
-Blender: 249
-Group: 'Import'
-Tooltip: 'Import .rmb/.rab/.txt files'
-"""
 
 import random
 import struct

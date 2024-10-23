@@ -1,4 +1,8 @@
-# RMB/RAB to FBX Converter
+<p align="center">
+	<img src="src/app.ico">
+	<br><br>
+	<img src="https://img.shields.io/badge/version-1.0-green.svg?style=for-the-badge">
+</p>
 
 This tool is an extended version of the original plugin created by Theran, from the Xentax forum ([source](https://forum.xentax.com)). I’ve added a convenient wrapper and expanded the functionality to streamline the process of converting `.rmb` (mesh) and `.rab` (animation) files from the game *R2 Reign of Revolution* into FBX format.
 
@@ -26,6 +30,7 @@ This tool is an extended version of the original plugin created by Theran, from 
 
     Option 1: Install as a Blender 2.49 Plugin**
       - Install the `rmb_rab_import.py` file as a plugin for Blender 2.49.
+        - For that
       - Open Blender 2.49.
       - Navigate to `File -> Import -> R2 Online Import (.rmb/.rab/.txt)` to import meshes, animations, or configuration text files. The configuration file will load the mesh and all available animations.
 
