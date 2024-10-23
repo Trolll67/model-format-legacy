@@ -38,19 +38,19 @@ jobs:
     - name: Build CLI Tool executable
       run: |
         cd ${{ env.WORK_DIR }}
-        pyinstaller --onefile --console --icon=app.ico --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  converter.py
+        pyinstaller --onefile --console --icon=app.ico --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  src/converter.py
 
     - name: Build GUI Tool executable
       run: |
         cd ${{ env.WORK_DIR }}
-        pyinstaller --onefile --windowed --icon=app.ico --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  converter_gui.py
+        pyinstaller --onefile --windowed --icon=app.ico --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  src/converter_gui.py
 
     - name: Copy dependencies
       run: |
         cd ${{ env.WORK_DIR }}
-        cp bpy249_import.py dist/
-        cp bpy36_export.py dist/
-        cp rmb_rab_import.py dist/
+        cp src/bpy249_import.py dist/
+        cp src/bpy36_export.py dist/
+        cp src/rmb_rab_import.py dist/
 
     - name: Create ZIP archive
       run: |
@@ -64,7 +64,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release RMB2FBX plugin and GUI/CLI tools ${{steps.tag.outputs.tag}}
+        release_name: RMB2FBX GUI/CLI tools ${{steps.tag.outputs.tag}}
         draft: false
         prerelease: false
 
