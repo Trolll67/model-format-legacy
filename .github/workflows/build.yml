@@ -1,0 +1,79 @@
+name: Build Executables
+
+on:
+  push:
+    tags:
+      - 'v*.*'
+
+env:
+  WORK_DIR: model-format-legacy
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        repository: Trolll67/model-format-legacy
+        path: ${{ env.WORK_DIR }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'  # Specify the Python version
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        cd ${{ env.WORK_DIR }}
+        pip install -r requirements.txt
+
+    - name: Get tag
+      id: tag
+      uses: dawidd6/action-get-tag@v1
+
+    - name: Build CLI Tool executable
+      run: |
+        cd ${{ env.WORK_DIR }}
+        pyinstaller --onefile --console --icon=app.ico --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  converter.py
+
+    - name: Build GUI Tool executable
+      run: |
+        cd ${{ env.WORK_DIR }}
+        pyinstaller --onefile --windowed --icon=app.ico --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  converter_gui.py
+
+    - name: Copy dependencies
+      run: |
+        cd ${{ env.WORK_DIR }}
+        cp bpy249_import.py dist/
+        cp bpy36_export.py dist/
+        cp rmb_rab_import.py dist/
+
+    - name: Create ZIP archive
+      run: |
+        cd ${{ env.WORK_DIR }}
+        powershell -command "Compress-Archive -Path dist\* -DestinationPath rmb2fbx_build_${{steps.tag.outputs.tag}}.zip"
+
+    - name: Create Build Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release RMB2FBX plugin and GUI/CLI tools ${{steps.tag.outputs.tag}}
+        draft: false
+        prerelease: false
+
+    - name: Upload Build Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.WORK_DIR }}/rmb2fbx_build_${{steps.tag.outputs.tag}}.zip
+        asset_name: rmb2fbx_build_${{steps.tag.outputs.tag}}.zip
+        asset_content_type: application/zip
