@@ -38,12 +38,12 @@ jobs:
     - name: Build CLI Tool executable
       run: |
         cd ${{ env.WORK_DIR }}
-        pyinstaller --onefile --console --icon=app.ico --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  src/converter.py
+        pyinstaller --onefile --console --icon=src/app.ico --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  src/converter.py
 
     - name: Build GUI Tool executable
       run: |
         cd ${{ env.WORK_DIR }}
-        pyinstaller --onefile --windowed --icon=app.ico --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  src/converter_gui.py
+        pyinstaller --onefile --windowed --icon=src/app.ico --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  src/converter_gui.py
 
     - name: Copy dependencies
       run: |
