@@ -7,6 +7,16 @@ Group: 'Import'
 Tooltip: 'Import .rmb/.rab/.txt files'
 """
 
+__author__ = 'Trolll'
+__version__ = '1.0'
+__bpydoc__ = """\
+This script imports RMB and RAB files into Blender.
+
+Usage:
+
+Run this script from "File->Import" and select the R2 Online Import .rmb/.rab/.txt
+"""
+
 # Author: Trolll, https://github.com/Trolll67, https://vk.com/trolll67
 # Date: 2024-10-23
 # Description: Blender 2.49b plugin to import RMB and RAB files
