@@ -120,12 +120,12 @@ def remove_textures():
 		bpy.data.images.remove(img)
 
 def prepare_object(rmb_filepath, obj):
-	# # rotate blender model x axis 90 degrees
-	# obj.rotation_euler[0] = radians(90)
-	# # scale object
-	# obj.scale = (0.01, 0.01, 0.01)
-	# # apply transformations
-	# bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+	# rotate blender model x axis 90 degrees
+	obj.rotation_euler[0] = radians(90)
+	# scale object
+	obj.scale = (0.01, 0.01, 0.01)
+	# apply transformations
+	bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 	remove_materials()
 	remove_textures()
@@ -199,7 +199,9 @@ def parse_model(filepath):
 		model.textures = []
 		for a in range(texture_count):
 			texture = MeshTexture() 
-			texname = reader.read_string(limit=260)          # 260 bytes texture name
+			texname = reader.read_string(limit=260)          # 260 bytes texture 
+			# fix paths
+			texname = os.path.basename(texname)
 
 			texpath = os.path.join(texture_directory, texname)
 			texture.diffuse = texpath
@@ -353,13 +355,11 @@ def main():
 	# export object to fbx
 	export_filepath = os.path.join(output, blend_file_name.replace(".blend", ".fbx"))
 	export_fbx(export_filepath)
-	logger.info(f"Exported object to {export_filepath}")
-
 
 	# NOTE: Extra logic here to resave blend file with shading enabled
 	enable_shading()
 	bpy.ops.wm.save_mainfile()
-
+	bpy.ops.wm.quit_blender()
 
 if __name__ == '__main__':
 	main()

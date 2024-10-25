@@ -85,7 +85,7 @@ def importer(output, rmb_file, rab_files):
 
     output_filepath = rmb_blend_path if rab_files is None or len(rab_files) == 0 or len(rab_files) > 1 else last_action_path
     if len(rab_files) > 1:
-        output_filepath = rmb_blend_path.split('.')[0] + '_all' + rmb_blend_path.split('.')[1]
+        output_filepath = rmb_blend_path.split('.')[0] + '_all.' + rmb_blend_path.split('.')[1]
     
     # find the mesh object by name
     mesh_obj = None
@@ -95,11 +95,11 @@ def importer(output, rmb_file, rab_files):
             break
 
     # fix transforms
-    if mesh_obj:
-        fix_transforms(mesh_obj)
-        logger.info("Transforms fixed for {0}".format(mesh_obj.getName()))
-    else:
-        logger.error("Mesh object not found for {0}".format(rmb_filename_no_ext))
+    # if mesh_obj:
+    #     fix_transforms(mesh_obj)
+    #     logger.info("Transforms fixed for {0}".format(mesh_obj.getName()))
+    # else:
+    #     logger.error("Mesh object not found for {0}".format(rmb_filename_no_ext))
 
     Blender.Save(output_filepath, 1)
     Blender.Quit()

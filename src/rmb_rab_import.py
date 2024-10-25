@@ -781,6 +781,8 @@ class ImportRMB():
 		for a in range(texture_count):
 			texture = DDSTexture() 
 			texname = reader.read_string(limit=260)          # 260 bytes texture name
+			# fix paths
+			texname = os.path.basename(texname)
 
 			texpath = os.path.join(texDir, texname)
 			texture.diffuse = texpath
@@ -834,7 +836,7 @@ class ImportRMB():
 
 		# has armature
 		skeleton = RMBSkeleton()
-		skeleton.name = self.filename
+		skeleton.name = self.filename + "_obj"
 
 		# 412 bytes for each bone
 		# print('\nBones: {0}'.format(bone_count))
@@ -982,7 +984,7 @@ class ImportRAB():
 		action.BONESPACE = True
 		action.BONESORT = True
 		action.name = 'action_' + anim_name
-		action.skeleton = model_name
+		action.skeleton = model_name + "_obj"
 
 		X1 = reader.read_int32()           # always 2
 		X2 = reader.read_int32()           # always 0

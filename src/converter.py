@@ -343,7 +343,7 @@ def parse_txt_file(input_file, mesh_only, anim_types) -> tuple[str, list[str]]:
                 
             return False
 
-        if len(anim_types) == 1 and anim_types[0] == 'all':
+        if len(anim_types) == 0 or (len(anim_types) == 1 and anim_types[0] == 'all'):
             for action in root.findall('.//Animation/Action/FileName'):
                 rab_files.add(action.text)
         else:
@@ -429,22 +429,15 @@ def process(input_file, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_only,
         print(f"Exporting Mesh {rmb_filename} to FBX...")
 
         # check if the .blend file exists
-        blend_file = os.path.join(output, rmb_filename, f"{rmb_filename}.blend")
+        blend_file = os.path.join(output, rmb_filename, f"{rmb_filename}_all.blend" if all_in_one else f"{rmb_filename}.blend")
         if not os.path.exists(blend_file):
             return f"Error: Blend file {blend_file} does not exist."
     
+        # export mesh
         export_blend_to_fbx(blend_file, os.path.join(output, rmb_filename), rmb_file)
 
         # return the output directory if mesh_only is set
-        if mesh_only:
-            return output_dir
-
-        # Export all in one actions to FBX
-        if all_in_one:
-            logger.info(f"Exporting all actions to one FBX")
-            print(f"Exporting all actions to one FBX")
-            actions_blend_file = os.path.splitext(blend_file)[0] + '_all' + os.path.splitext(blend_file)[1]
-            export_blend_to_fbx(actions_blend_file, os.path.join(output, rmb_filename), rmb_file)
+        if mesh_only or all_in_one:
             return output_dir
 
         # Export actions to FBX
@@ -474,7 +467,7 @@ def print_intro():
     print()
     print("By providing a .txt model configuration file, you can convert a .rmb mesh and\nall .rab animations to .fbx files in one go.")
     print("You can convert a single .rmb mesh without animations by using the --mesh-only flag.")
-    print("You can also convert only specific animations by specifying the type with the --anim-type flag.")
+    print("You can also convert only specific animations by specifying the type with the --anim-types flag.")
     print()
     print()
 
@@ -556,5 +549,5 @@ if __name__ == '__main__':
 # python .\converter.py -i "E:\map_zone\models\m00583.rmb" -o E:\map_zone\output_models --anim-type "dead"
 
 # Command to build exe:
-# pyinstaller --onefile --windowed --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter --hidden-import=bpy249_import --hidden-import=bpy36_export  .\converter_gui.py
-# pyinstaller --onefile --console --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  .\converter.py
+# pyinstaller --onefile --windowed --hidden-import=tkinter --hidden-import=subprocess --hidden-import=converter  src/converter_gui.py
+# pyinstaller --onefile --console --hidden-import=subprocess --hidden-import=bpy249_import --hidden-import=bpy36_export --name=converter_cli  src/converter.py
