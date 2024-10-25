@@ -35,6 +35,14 @@ jobs:
       id: tag
       uses: dawidd6/action-get-tag@v1
 
+    - name: Update Version
+      id: update_version
+      run: |
+        cd ${{ env.WORK_DIR }}
+        python build_version_updater.py ${{steps.tag.outputs.tag}}
+        echo "script-result=$LASTEXITCODE" >> $GITHUB_OUTPUT
+      shell: pwsh
+
     - name: Build CLI Tool executable
       run: |
         cd ${{ env.WORK_DIR }}
