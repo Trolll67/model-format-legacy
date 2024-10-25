@@ -206,7 +206,7 @@ def toggle_anim_type_entry(*args):
 
 
 root = tk.Tk()
-root.title("RMB/RAB to FBX Converter GUI Tool v1.0")
+root.title("RMB/RAB to FBX Converter GUI Tool v1.1")
 root.geometry("400x300")
 
 output_label = tk.Label(root, text="Output Directory:")

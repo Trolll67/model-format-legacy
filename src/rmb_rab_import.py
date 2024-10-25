@@ -8,7 +8,7 @@ Tooltip: 'Import .rmb/.rab/.txt files'
 """
 
 __author__ = 'Trolll'
-__version__ = '1.0'
+__version__ = '1.1'
 __bpydoc__ = """\
 This script imports RMB and RAB files into Blender.
 

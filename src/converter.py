@@ -464,7 +464,7 @@ def print_intro():
     """Print application intro and author details."""
     print("=======================================")
     print("  RMB/RAB to FBX Converter CLI Tool")
-    print("  Version 1.0")
+    print("  Version 1.1")
     print("  Author: Trolll")
     print("=======================================")
     print()
