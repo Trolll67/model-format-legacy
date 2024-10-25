@@ -22,7 +22,7 @@ file)
   - Requires [Python 2.6.2](https://www.python.org/downloads/release/python-262/) to be installed.
     - For Windows, download the **Windows x86 MSI Installer (2.6.2)** package.
 - Blender 3.6 (for exporting data from `.blend` file to `.fbx`)
-  - Requires Python 3.10+ to be installed (ensure compatibility with Blender scripting features if used).
+  - Requires [Python 3.10+](https://www.python.org/downloads/release/python-3100/) to be installed (ensure compatibility with Blender scripting features if used).
 
 ## Installation
 
