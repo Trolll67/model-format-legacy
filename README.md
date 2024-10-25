@@ -17,7 +17,10 @@ This tool is an extended version of the original plugin created by Theran, from 
 
 ## Requirements
 
-- Blender 2.49b (for reading `.rmb` and `.rab` files and save as `.blend` file)
+- Blender 2.49b (for reading `.rmb` and `.rab` files and save as `.blend` 
+file)
+  - Requires [Python 2.6.2](https://www.python.org/downloads/release/python-262/) to be installed.
+    - For Windows, download the **Windows x86 MSI Installer (2.6.2)** package.
 - Blender 3.6 (for exporting data from `.blend` file to `.fbx`)
 
 ## Installation
