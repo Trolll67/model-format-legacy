@@ -119,7 +119,7 @@ def remove_textures():
 	for img in bpy.data.images:
 		bpy.data.images.remove(img)
 
-def prepare_object(rmb_file, obj):
+def prepare_object(rmb_filepath, obj):
 	# # rotate blender model x axis 90 degrees
 	# obj.rotation_euler[0] = radians(90)
 	# # scale object
@@ -131,11 +131,11 @@ def prepare_object(rmb_file, obj):
 	remove_textures()
 
 	# parse model
-	logger.info(f"Model: {rmb_file}")
+	logger.info(f"Model: {rmb_filepath}")
 
-	model = parse_model(rmb_file)
+	model = parse_model(rmb_filepath)
 	if model is None:
-		logger.error(f"Model not found: {rmb_file}")
+		logger.error(f"Model not found: {rmb_filepath}")
 		return
 	
 	def find_mesh(name):
@@ -177,15 +177,16 @@ def get_specific_texture(base_name: str, tex_type: str) -> str:
 	else:
 		return None
 	
-def parse_model(filename):
-	directory = "E:\\map_zone\\models"
-	texture_directory = "E:\\map_zone\\models\\texture"
-
-	filepath = os.path.join(directory, filename)
-	if not os.path.exists(filepath):
-		logger.error(f"File not found: {filepath}")
-		return None
+def parse_model(filepath):
+	directory = os.path.dirname(filepath)
+	texture_directory = os.path.join(directory, 'texture')
+	if not os.path.exists(texture_directory): 
+		texture_directory = os.path.join(directory, 'textures')
+		if not os.path.exists(texture_directory):
+			logger.error(f"Texture directory not found: {os.path.join(directory, 'texture')}")
+			return None
 	
+	filename = os.path.basename(filepath)
 	model = Model(filename)
 	with open(filepath, 'rb') as file:
 		reader = BinaryReader(file)
@@ -342,12 +343,12 @@ def main():
 	blend_file_path = bpy.data.filepath
 	blend_file_name = bpy.path.basename(blend_file_path)
 
-	output, rmb_file = parse_arguments()
+	output, rmb_filepath = parse_arguments()
 	if not os.path.exists(output):
 		os.makedirs(output)
 
 	# prepare object
-	prepare_object(rmb_file, obj)
+	prepare_object(rmb_filepath, obj)
 	
 	# export object to fbx
 	export_filepath = os.path.join(output, blend_file_name.replace(".blend", ".fbx"))

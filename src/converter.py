@@ -84,11 +84,12 @@ def downloading_progress_bar(current, total, bar_length=40):
     total_mb = total / 1024 / 1024
 
     # ANSI escape code for green text
-    green_color = '\033[92m'
-    reset_color = '\033[0m'
+    # green_color = '\033[92m'
+    # reset_color = '\033[0m'
 
     percent *= 100
-    sys.stdout.write(f'\r[{green_color}{arrow}{spaces}{reset_color}] {percent:.2f}% ({current_mb:.2f} MB / {total_mb:.2f} MB)')
+    # sys.stdout.write(f'\r[{green_color}{arrow}{spaces}{reset_color}] {percent:.2f}% ({current_mb:.2f} MB / {total_mb:.2f} MB)')
+    sys.stdout.write(f'\r[{arrow}{spaces}] {percent:.2f}% ({current_mb:.2f} MB / {total_mb:.2f} MB)')
     sys.stdout.flush()
 
 def download_file(url, destination, download_status):
