@@ -318,7 +318,7 @@ def add_material(mesh, texture_data):
 		if emission_input is not None:
 			blend_mat.node_tree.links.new(emission_input, texture_node.outputs['Color'])
 			# set emission strength
-			node_principled.inputs['Emission Strength'].default_value = 0.5
+			# node_principled.inputs['Emission Strength'].default_value = 0.5
 		else:
 			logger.warning('Emission input not found')
 
