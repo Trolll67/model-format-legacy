@@ -21,6 +21,7 @@
 from collections import defaultdict
 from io import BufferedReader
 import os
+import re
 import struct
 import sys
 import bpy
@@ -131,6 +132,7 @@ def prepare_object(rmb_filepath, obj):
 	remove_textures()
 
 	# parse model
+	logger.info(f"==================== Start export ====================")
 	logger.info(f"Model: {rmb_filepath}")
 
 	model = parse_model(rmb_filepath)
@@ -139,9 +141,28 @@ def prepare_object(rmb_filepath, obj):
 		return
 	
 	def find_mesh(name):
+		# check if name contains duplicate index .001
+		match = re.search(r'\.(\d{3})$', name)
+		index = 0
+		if match:
+			index = int(match.group(1))
+			name = name[:-4]
+
+			logger.info(f"Found index: {index} name: {name}")
+		else:
+			logger.info(f"Index not found: {name}")
+
+		# find mesh by name and index
+		idx = 0
 		for mesh in model.meshes:
 			if mesh.name == name:
-				return mesh
+				if index == 0:
+					return mesh
+				elif index == idx:
+					return mesh
+				
+				idx += 1
+
 		return None
 	
 	for obj in bpy.context.scene.objects:
@@ -260,16 +281,34 @@ def add_material(mesh, texture_data):
 
 	# build material
 	mat_wrap.update()
+	blend_mat.use_nodes = True
 	nodes = blend_mat.node_tree.nodes
+	node_principled = next(node for node in nodes if node.type == 'BSDF_PRINCIPLED')
+
+	# setup alpha channel
+	texture_node = nodes.get('Image Texture')
+	if texture_node is not None:
+		# connect alpha channel to alpha input
+		node_principled_alpha = node_principled.inputs.get('Alpha')
+		texture_node_alpha = texture_node.outputs.get('Alpha')
+		if node_principled_alpha is not None and texture_node_alpha is not None:
+			blend_mat.node_tree.links.new(node_principled_alpha, texture_node_alpha)
+
+		# change blend mode to alpha clip
+		blend_mat.blend_method = 'CLIP'
 
 	# add uvmap
 	texture_node = nodes.get('Image Texture')
 	if texture_node is not None:
 		uvmap_node = nodes.new('ShaderNodeUVMap')
 		blend_mat.node_tree.links.new(texture_node.inputs['Vector'], uvmap_node.outputs['UV'])
+		
+		# specular
+		specular_node = nodes.get('Principled BSDF').inputs.get('Specular')
+		if specular_node:
+			blend_mat.node_tree.links.new(specular_node.inputs['Vector'], uvmap_node.outputs['UV'])
 
 	# setup emission
-	node_principled = next(node for node in nodes if node.type == 'BSDF_PRINCIPLED')
 	if texture_node is not None:
 		emission_input = node_principled.inputs.get('Emission')
 		# support blender 4.0
@@ -278,6 +317,8 @@ def add_material(mesh, texture_data):
 
 		if emission_input is not None:
 			blend_mat.node_tree.links.new(emission_input, texture_node.outputs['Color'])
+			# set emission strength
+			node_principled.inputs['Emission Strength'].default_value = 0.5
 		else:
 			logger.warning('Emission input not found')
 

@@ -287,7 +287,7 @@ anim_help_label = tk.Label(anim_type_frame, text="?", cursor="hand2", font=("Ari
 anim_help_label.pack(side=tk.LEFT, padx=(5, 0))
 LargeToolTip(anim_help_label, "All available animation types:\n" + "\n".join(available_anim_types))
 
-open_button = tk.Button(root, text="Open File", command=open_file_dialog, width=20, bg='#0077b6', fg='#FFFFFF')
+open_button = tk.Button(root, text="Select Model (.rmb/.txt)", command=open_file_dialog, width=20, bg='#0077b6', fg='#FFFFFF')
 open_button.pack(pady=(30, 10))
 
 author_label = tk.Label(root, text="Created by Trolll", wraplength=300, fg="#003049", cursor="hand2")
