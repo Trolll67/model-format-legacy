@@ -329,7 +329,18 @@ def export_fbx(output):
 	# select all objects
 	bpy.ops.object.select_all(action='SELECT')
 	# export selected objects to fbx
-	bpy.ops.export_scene.fbx(filepath=output, check_existing=False, use_selection=True)
+	bpy.ops.export_scene.fbx(
+		filepath=output, 
+		check_existing=False, 
+		use_selection=True,
+		path_mode='COPY',
+		embed_textures=True,
+		bake_anim=True,
+		bake_anim_use_all_bones=True,
+        bake_anim_use_nla_strips=True,
+        bake_anim_use_all_actions=True,
+        add_leaf_bones=False,
+	)
 
 def parse_arguments():
     parsed_args = defaultdict(list)
