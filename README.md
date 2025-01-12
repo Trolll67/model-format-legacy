@@ -145,3 +145,9 @@ The GNU General Public License is a free, copyleft license for software and othe
 
 ### Full License Text
 [Full License Text](https://www.gnu.org/licenses/gpl-3.0.html)
+
+##
+
+<div align="center">
+Made with ❤️ for R2 Online community
+</div>

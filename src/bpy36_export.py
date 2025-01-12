@@ -305,7 +305,7 @@ def add_material(mesh, texture_data):
 		
 		# specular
 		specular_node = nodes.get('Principled BSDF').inputs.get('Specular')
-		if specular_node:
+		if specular_node and type(specular_node) != bpy.types.NodeSocketFloatFactor:
 			blend_mat.node_tree.links.new(specular_node.inputs['Vector'], uvmap_node.outputs['UV'])
 
 	# setup emission
@@ -328,19 +328,27 @@ def add_material(mesh, texture_data):
 def export_fbx(output):
 	# select all objects
 	bpy.ops.object.select_all(action='SELECT')
-	# export selected objects to fbx
-	bpy.ops.export_scene.fbx(
-		filepath=output, 
-		check_existing=False, 
-		use_selection=True,
-		path_mode='COPY',
-		embed_textures=True,
-		bake_anim=True,
-		bake_anim_use_all_bones=True,
-        bake_anim_use_nla_strips=True,
-        bake_anim_use_all_actions=True,
-        add_leaf_bones=False,
-	)
+	try:
+		# export selected objects to fbx
+		bpy.ops.export_scene.fbx(
+			filepath=output, 
+			check_existing=False, 
+			use_selection=True,
+			path_mode='COPY',
+			embed_textures=True,
+			add_leaf_bones=False,
+			bake_anim=True,
+			bake_anim_use_all_bones=True,
+			bake_anim_use_nla_strips=True,
+			bake_anim_use_all_actions=True,
+			bake_anim_step=1.0,
+			bake_anim_simplify_factor=0.0,
+			bake_anim_force_startend_keying=True,
+		)
+	except Exception as e:
+		logger.error(f"Error exporting to fbx: {e}")
+		import traceback
+		logger.error(f"Stack trace: {traceback.format_exc()}")
 
 def parse_arguments():
     parsed_args = defaultdict(list)
@@ -402,9 +410,16 @@ def main():
 		os.makedirs(output)
 
 	# prepare object
-	prepare_object(rmb_filepath, obj)
+	try:
+		prepare_object(rmb_filepath, obj)
+	except Exception as e:
+		logger.error(f"Error preparing object: {e}")
+		import traceback
+		logger.error(f"Stack trace: {traceback.format_exc()}")
+		return
 	
 	# export object to fbx
+	logger.info(f"Exporting to: {output}")
 	export_filepath = os.path.join(output, blend_file_name.replace(".blend", ".fbx"))
 	export_fbx(export_filepath)
 

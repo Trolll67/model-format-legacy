@@ -320,7 +320,7 @@ def export_blend_to_fbx(blend_file, output, rmb_file):
     #     logger.info(process.stdout)
     #     print(process.stdout)
 
-def parse_txt_file(input_file, mesh_only, anim_types) -> tuple[str, list[str]]:
+def parse_txt_file(input_file, mesh_only, anim_types, include_missing_anims) -> tuple[str, list[str]]:
     with open(input_file, 'r') as file:
         content = file.read()
 
@@ -351,25 +351,37 @@ def parse_txt_file(input_file, mesh_only, anim_types) -> tuple[str, list[str]]:
                 if is_anim_type(action.get('Name')):
                     rab_files.add(action.find('.//FileName').text)
 
+        # include missing animations in the .txt file
+        if include_missing_anims:
+            filedir = os.path.dirname(input_file)
+            prefix = mesh_file.lower().replace('.rmb', '')
+            anim_files = [f for f in os.listdir(filedir) if f.startswith(f'{prefix}_') and f.endswith('.rab')]
+            # add animations
+            for anim_file in anim_files:
+                if anim_file not in rab_files:
+                    print(f"Adding missing anims: {anim_file}...")
+                    rab_files.add(anim_file)
+
         rab_files = sorted(rab_files)
 
         logger.info(f"Found {len(rab_files)} (.rab) files:")
         print(f"Found {len(rab_files)} (.rab) files:")
         for rab_file in rab_files:
-            logger.info(f'\t{rab_file}')
-            print(f'\t{rab_file}')
+            is_exist = os.path.exists(os.path.join(os.path.dirname(input_file), rab_file))
+            logger.info(f'\t{rab_file} {"(Not Found)" if not is_exist else ""}')
+            print(f'\t{rab_file} {"(Not Found)" if not is_exist else ""}')
 
         return mesh_file, rab_files
 
-def parse_rmb_file(input_file, mesh_only, anim_types) -> tuple[str, list[str]]:
+def parse_rmb_file(input_file, mesh_only, anim_types, include_missing_anims) -> tuple[str, list[str]]:
     config_filename = os.path.basename(input_file).replace('.rmb', '.txt')
     config_file = os.path.join(os.path.dirname(input_file), config_filename)
     if not os.path.exists(config_file):
         return input_file, []
     
-    return parse_txt_file(config_file, mesh_only, anim_types)
+    return parse_txt_file(config_file, mesh_only, anim_types, include_missing_anims)
 
-def process(input_file, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_only, anim_types, download_blender):
+def process(input_file, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_only, anim_types, download_blender, include_missing_anims):
     # download Blender 2.49 and 3.6
     if download_blender:
         if not CLI:
@@ -412,9 +424,12 @@ def process(input_file, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_only,
     os.makedirs(output_dir, exist_ok=True)
 
     # Parse the input file
-    rmb_file, rab_files = parse_txt_file(input_file, mesh_only, anim_types) if ext == '.txt' else parse_rmb_file(input_file, mesh_only, anim_types)
+    rmb_file, rab_files = parse_txt_file(input_file, mesh_only, anim_types, include_missing_anims) if ext == '.txt' else parse_rmb_file(input_file, mesh_only, anim_types, include_missing_anims)
     rmb_file = os.path.join(os.path.dirname(input_file), rmb_file)
     rab_files = [os.path.join(os.path.dirname(input_file), rab_file) for rab_file in rab_files]
+    
+    # filter rab files if only file exists
+    rab_files = [file for file in rab_files if os.path.exists(file)]
 
     # Import model and save in .blend file
     if rmb2blend:
@@ -484,6 +499,7 @@ def main():
     parser.add_argument('--mesh-only', action='store_true', default=False, help='Import only the .rmb mesh')
     parser.add_argument('--anim-types', type=str, nargs='+', help='Animation type(s) to export (e.g., idle, idle1, walk)')
     parser.add_argument('--download-blender' , action='store_true', default=False, help='Download Blender 2.49 and 3.6')
+    parser.add_argument('--include-missing-anims', action='store_true', default=False, help='Include missing in .txt file animations')
     
     args = parser.parse_args()
     anim_types = args.anim_types if isinstance(args.anim_types, list) else [args.anim_types] if args.anim_types else []
@@ -523,7 +539,9 @@ def main():
         input()
         sys.exit()
 
-    result = process(args.input, args.output, args.all_in_one, args.rmb2blend, args.blend2fbx, args.mesh_only, anim_types, args.download_blender)
+    include_missing_anims = args.include_missing_anims
+
+    result = process(args.input, args.output, args.all_in_one, args.rmb2blend, args.blend2fbx, args.mesh_only, anim_types, args.download_blender, include_missing_anims)
     # check if the result is a error message
     if result and result.startswith("Error:"):
         logger.error(result)
