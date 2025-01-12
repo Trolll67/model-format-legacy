@@ -343,7 +343,7 @@ def export_fbx(output):
 			bake_anim_use_all_actions=True,
 			bake_anim_step=1.0,
 			bake_anim_simplify_factor=0.0,
-			bake_anim_force_startend_keying=True,
+			bake_anim_force_startend_keying=False,
 		)
 	except Exception as e:
 		logger.error(f"Error exporting to fbx: {e}")
