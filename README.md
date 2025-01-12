@@ -1,7 +1,7 @@
 <p align="center">
 	<img src="src/app.ico">
 	<br><br>
-	<img src="https://img.shields.io/badge/version-1.0-green.svg?style=for-the-badge">
+	<img src="https://img.shields.io/badge/version-1.4-green.svg?style=for-the-badge">
 </p>
 
 This tool is an extended version of the original plugin created by Theran, from the Xentax forum ([source](https://forum.xentax.com)). I’ve added a convenient wrapper and expanded the functionality to streamline the process of converting `.rmb` (mesh) and `.rab` (animation) files from the game *R2 Reign of Revolution* into FBX format.
