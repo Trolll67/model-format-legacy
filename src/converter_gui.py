@@ -59,16 +59,7 @@ def process_file(input_path, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_
     finally:
         root.grab_release()
 
-def open_file_dialog():
-    file_path = filedialog.askopenfilename(title="Select a file")
-    
-    if file_path is None or file_path == "":
-        return
-    
-    if not os.path.exists(file_path):
-        messagebox.showerror("Error", "File not found")
-        return
-    
+def run_process(file_path, show_output=True, show_dir=None):
     output_dir = output_entry.get()
     all_in_one = all_in_one_var.get()
     rmb2blend = rmb2blend_var.get()
@@ -87,7 +78,49 @@ def open_file_dialog():
         os.makedirs(output_dir, exist_ok=True)
 
     out_dir = process_file(file_path, output_dir, all_in_one, rmb2blend, blend2fbx, mesh_only, anim_types, include_missing_anims)
-    show_output_file(out_dir)
+    
+    if show_output:
+        if show_dir:
+            show_output_file(show_dir)
+        else:
+            show_output_file(out_dir)
+
+def open_file_dialog():
+    # open folder dialog
+    if export_everything_var.get():
+        folder_path = filedialog.askdirectory(title="Select a folder")
+        
+        if folder_path is None or folder_path == "":
+            return
+        
+        if not os.path.exists(folder_path):
+            messagebox.showerror("Error", "Folder not found")
+
+        rmb_files = [file for file in os.listdir(folder_path) if file.endswith('.rmb') and '_' not in file]
+
+        if not rmb_files:
+            messagebox.showerror("Error", "No .rmb files found in the folder")
+            return
+        
+        # process all files
+        for idx, rmb_file in enumerate(rmb_files):
+            file_path = os.path.join(folder_path, rmb_file)
+            is_last = idx == len(rmb_files) - 1
+            run_process(file_path, show_output=is_last, show_dir=output_entry.get())
+
+    # open file dialog
+    else:
+        file_path = filedialog.askopenfilename(title="Select a file")
+        
+        if file_path is None or file_path == "":
+            return
+        
+        if not os.path.exists(file_path):
+            messagebox.showerror("Error", "File not found")
+            return
+        
+        run_process(file_path)
+        
 
 def select_output_directory():
     output_dir = filedialog.askdirectory(title="Select Output Directory")
@@ -206,6 +239,12 @@ def toggle_anim_type_entry(*args):
     else:
         anim_type_entry.config(state=tk.DISABLED)
 
+def update_button_text(*args):
+    if export_everything_var.get():
+        open_button.config(text="Export Everything")
+    else:
+        open_button.config(text="Select Model (.rmb/.txt)")
+
 
 root = tk.Tk()
 root.title("RMB/RAB to FBX Converter GUI Tool v1.1")
@@ -250,9 +289,14 @@ mesh_only_check.pack(side=tk.LEFT, padx=5)
 
 # options 2
 include_missing_anims_var = tk.BooleanVar()
+export_everything_var = tk.BooleanVar()
+export_everything_var.trace_add("write", update_button_text)
 
 include_missing_anims_check = tk.Checkbutton(option_frame2, text="Include missing animations", variable=include_missing_anims_var)
 include_missing_anims_check.pack(side=tk.LEFT, padx=5)
+
+export_everything_check = tk.Checkbutton(option_frame2, text="Export everything", variable=export_everything_var)
+export_everything_check.pack(side=tk.LEFT, padx=5)
 
 anim_type_frame = tk.Frame(root)
 anim_type_frame.pack(pady=10)
